@@ -1,0 +1,34 @@
+# Ablation arm C: identical student network trained on labels from a
+# hand-tuned classical logistic heuristic instead of the VQC oracle.
+# Compare the resulting model against otuken_v2 in qos-bench.
+# (The oracle block is unused when labeler != quantum; it is kept
+# identical to otuken_v2 so the configs diff in exactly one line.)
+name: ablation_logistic
+seed: 42
+
+oracle:
+  n_qubits: 3
+  inputs: [proximity, object_count, vram_usage]
+  entanglement: cry_ring
+  entangle_angle: 1.0471975511965976   # pi/3
+  encoding_scale: 0.5
+  bias:
+    qubit: 2
+    angle: 0.50
+    gate: ry
+  readout_qubit: 2
+  shots: 128
+
+dataset:
+  n_scenarios: 250000
+  labeler: logistic   # <- the only difference from otuken_v2
+
+student:
+  hidden: [64, 64]
+  epochs: 50
+  lr: 0.001
+  batch_size: 512
+  val_split: 0.1
+
+export:
+  opset: 17

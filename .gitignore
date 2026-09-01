@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+
+# Artifacts (datasets, models, reports are reproducible from configs)
+qos-core/artifacts/
+*.npz
+*.pt
+*.onnx
+!qos-bench/fixtures/*.onnx
+
+# C++ / CMake
+qos-runtime/build/
+CMakeCache.txt
+CMakeFiles/
+*.obj
+*.o
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+*.exe
+
+# IDE / OS / tooling
+.claude/
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+.DS_Store

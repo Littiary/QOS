@@ -1,0 +1,30 @@
+# Paper-fidelity configuration - reproduces the whitepaper's setup:
+# 3 qubits (Distance, Object Count, VRAM), Ry(pi*x) angle encoding,
+# ring CNOT entanglement, Rz(0.60) risk-aversion bias on the VRAM qubit,
+# 128 shots per scenario, 250k scenarios, 3-64-64-1 student, 50 epochs.
+name: otuken_v1
+seed: 42
+
+oracle:
+  n_qubits: 3
+  inputs: [distance, object_count, vram_usage]
+  entanglement: ring
+  bias:
+    qubit: 2        # VRAM qubit
+    angle: 0.60     # radians (paper Eq. 6)
+  readout_qubit: 0
+  shots: 128        # sampling mode, includes shot noise (paper Eq. 7)
+
+dataset:
+  n_scenarios: 250000
+  labeler: quantum  # ablation variants: threshold | logistic
+
+student:
+  hidden: [64, 64]
+  epochs: 50
+  lr: 0.001
+  batch_size: 512
+  val_split: 0.1
+
+export:
+  opset: 17

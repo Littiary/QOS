@@ -1,0 +1,43 @@
+# Recommended production configuration - the functional revision of the
+# whitepaper circuit (see paper/errata.md for why v1 needed fixing):
+#   - Ry(0.5*pi*x) half-range encoding  -> no rotation wrap-around
+#   - CRy(pi/3) soft ring entanglement  -> monotone, genuinely entangled surface
+#   - Ry(0.5) population bias on VRAM   -> risk-aversion that actually measures
+#   - readout on q2                     -> all three inputs influence the score
+#
+# Input 0 is PROXIMITY (1 - normalized distance): higher = closer = more
+# geometry pressure. The host engine normalizes accordingly.
+#
+# Verified surface properties (exact mode):
+#   monotone in all inputs; VRAM dominant (0.15 -> 0.77 sweep);
+#   proximity influence shrinks as VRAM rises (+0.112 -> +0.081), i.e.
+#   "distance matters less when VRAM is critical" - the paper's core claim.
+name: otuken_v2
+seed: 42
+
+oracle:
+  n_qubits: 3
+  inputs: [proximity, object_count, vram_usage]
+  entanglement: cry_ring
+  entangle_angle: 1.0471975511965976   # pi/3
+  encoding_scale: 0.5
+  bias:
+    qubit: 2        # VRAM qubit
+    angle: 0.50
+    gate: ry        # population bias (rz is a measurement no-op - errata #2)
+  readout_qubit: 2
+  shots: 128
+
+dataset:
+  n_scenarios: 250000
+  labeler: quantum
+
+student:
+  hidden: [64, 64]
+  epochs: 50
+  lr: 0.001
+  batch_size: 512
+  val_split: 0.1
+
+export:
+  opset: 17

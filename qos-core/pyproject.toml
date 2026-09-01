@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qos-core"
+version = "0.1.0"
+description = "QOS Quantum Optimization System - VQC data factory, distillation and ONNX export"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-only" }
+authors = [{ name = "Kaan Esrefoglu", email = "kaanesrefoglu5@gmail.com" }]
+dependencies = [
+    "numpy>=1.24",
+    "qiskit>=1.0",
+    "qiskit-aer>=0.14",
+    "torch>=2.1",
+    "onnx>=1.15",
+    "onnxruntime>=1.17",
+    "PyYAML>=6.0",
+    "tqdm>=4.65",
+]
+
+[project.urls]
+Homepage = "https://www.kestrogames.com"
+
+[tool.setuptools.packages.find]
+include = ["qos_core*"]

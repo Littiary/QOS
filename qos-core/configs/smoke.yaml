@@ -1,0 +1,32 @@
+# Fast end-to-end smoke test on the recommended v2 circuit: exact
+# probabilities (no sampling), small dataset, short training.
+# Verifies the whole pipeline in ~1 minute.
+name: smoke
+seed: 42
+
+oracle:
+  n_qubits: 3
+  inputs: [proximity, object_count, vram_usage]
+  entanglement: cry_ring
+  entangle_angle: 1.0471975511965976   # pi/3
+  encoding_scale: 0.5
+  bias:
+    qubit: 2
+    angle: 0.50
+    gate: ry
+  readout_qubit: 2
+  shots: null       # exact statevector probabilities - fast & deterministic
+
+dataset:
+  n_scenarios: 5000
+  labeler: quantum
+
+student:
+  hidden: [64, 64]
+  epochs: 15
+  lr: 0.001
+  batch_size: 256
+  val_split: 0.1
+
+export:
+  opset: 17
