@@ -77,6 +77,17 @@ qos_brain_destroy(brain);
 full integration pattern: evaluation cadence, smoothing, hysteresis and running
 several agents at once.
 
+## Results so far
+
+A first measured comparison on one Unreal Engine 5.8 scene is in
+[`qos-bench/unreal/RESULTS.md`](qos-bench/unreal/RESULTS.md). Short version:
+the adaptive arms (qos and a classical control) both beat the baseline and a
+static threshold rule by 7 to 10 FPS with a third of the stutters, and the
+quantum labelled model and the hand tuned classical model land within run to
+run noise of each other. No quantum advantage is claimed from that run. The
+harness, the per knob switching costs and the protocol are documented next to
+the results.
+
 ## About the quantum part
 
 The circuit simulation is where all the training labels come from, so it is the
@@ -98,7 +109,10 @@ paper intended and is the default config.
 - [x] Config driven VQC data factory (ring / linear / full / cry topologies)
 - [x] Distillation, ONNX export, runtime parity check
 - [x] C++ runtime with C ABI
-- [ ] Benchmark results on a public scene (baseline vs threshold vs classical NN vs QOS)
+- [x] Unreal Engine 5.8 benchmark harness with stress injection (`qos-bench/unreal`)
+- [x] First benchmark on a private scene: adaptive arms beat baseline, quantum vs classical labels at parity (`qos-bench/unreal/RESULTS.md`)
+- [ ] Benchmark on a public scene so others can reproduce the numbers
+- [ ] Eight input models benchmark (models trained, run pending)
 - [ ] Godot / custom engine reference adapter
 - [ ] Real QPU dataset slice (IBM Quantum)
 - [ ] Multi agent Council orchestration layer

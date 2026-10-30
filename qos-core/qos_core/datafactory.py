@@ -28,6 +28,8 @@ def generate_dataset(cfg: QOSConfig, progress: bool = True) -> tuple[np.ndarray,
         y = heuristic.threshold_labels(x)
     elif labeler == "logistic":
         y = heuristic.logistic_labels(x)
+    elif labeler == "logistic8":
+        y = heuristic.logistic8_labels(x)
     else:  # pragma: no cover - config validation rejects this earlier
         raise ValueError(f"unknown labeler: {labeler}")
 

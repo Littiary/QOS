@@ -20,10 +20,14 @@ Stages can also run one at a time: `generate`, `train`, `export`.
 | `configs/otuken_v1.yaml` | Faithful reproduction of the published paper (CNOT ring, Rz bias). Kept for the record, its surface is degenerate (see errata). |
 | `configs/smoke.yaml` | Fast pipeline check on the v2 circuit: exact probabilities, 5k scenarios, 15 epochs. |
 | `configs/ablation_logistic.yaml` | Ablation arm C: same student network, classical logistic labels. Differs from v2 in one line. |
+| `configs/otuken_v3b_star.yaml` | Eight input oracle for the Unreal harness telemetry (proximity, object density, VRAM, lights, pawns, draw calls, camera speed, frame load): CRy ring between inputs plus a CRy star into a dedicated readout wire. |
+| `configs/otuken_v3_8in.yaml` | Eight inputs on a plain CRy ring, kept as a negative example: influence decays about 2x per hop, so inputs far from the readout barely register (see `paper/errata.md`, finding 4). |
+| `configs/ablation_logistic8.yaml` | Ablation arm C for the eight input setup: same student, hand tuned logistic labels over all eight inputs. |
 
 Everything is a parameter: qubit count, input names, entanglement topology
-(`ring`, `linear`, `full`, `none`, `cry_ring`, `cry_linear`), bias qubit, gate
-and angle, shots (an integer for Aer sampling with shot noise, `null` for exact
+(`ring`, `linear`, `full`, `none`, `cry_ring`, `cry_linear`, `cry_star`,
+`cry_ring_star`), an optional dedicated readout wire (`ancilla: true` with
+`star_angle`), bias qubit, gate and angle, shots (an integer for Aer sampling with shot noise, `null` for exact
 statevector probabilities), network width and depth, training hyperparameters.
 
 To adapt QOS to your own engine telemetry, copy a config, rename the

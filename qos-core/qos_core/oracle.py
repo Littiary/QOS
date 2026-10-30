@@ -25,7 +25,9 @@ _AER_CHUNK = 2_000  # circuits per Aer run() call
 
 
 def _entangling_pairs(n: int, topology: str) -> list[tuple[int, int]]:
-    base = topology.removeprefix("cry_")
+    base = topology.removeprefix("cry_").removesuffix("_star")
+    if base == "star":
+        return []
     if base == "none" or n < 2:
         return []
     if base == "linear":
@@ -49,7 +51,8 @@ class StochasticOracle:
 
     def _build_circuit(self, measured: bool) -> QuantumCircuit:
         cfg = self.cfg
-        qc = QuantumCircuit(cfg.n_qubits, 1 if measured else 0)
+        n_wires = cfg.n_qubits + (1 if cfg.ancilla else 0)
+        qc = QuantumCircuit(n_wires, 1 if measured else 0)
         for i, p in enumerate(self.params):
             qc.ry(np.pi * cfg.encoding_scale * p, i)
         soft = cfg.entanglement.startswith("cry_")
@@ -60,6 +63,9 @@ class StochasticOracle:
                 qc.cx(control, target)
         if cfg.bias is not None:
             getattr(qc, cfg.bias.gate)(cfg.bias.angle, cfg.bias.qubit)
+        if cfg.entanglement.endswith("star"):
+            for i in range(cfg.n_qubits):
+                qc.cry(cfg.star_angle, i, cfg.readout_qubit)
         if measured:
             qc.measure(cfg.readout_qubit, 0)
         return qc
@@ -118,9 +124,10 @@ class StochasticOracle:
             else "none"
         )
         shots = "exact" if cfg.shots is None else f"{cfg.shots} shots"
+        star = f" | star angle {cfg.star_angle:g} into ancilla" if cfg.ancilla else ""
         summary = (
             f"VQC: {cfg.n_qubits} qubits | Ry({cfg.encoding_scale:g}*pi*x) encoding | "
-            f"{cfg.entanglement} entanglement | bias: {bias} | "
+            f"{cfg.entanglement} entanglement{star} | bias: {bias} | "
             f"readout: q{cfg.readout_qubit} | {shots}"
         )
         try:

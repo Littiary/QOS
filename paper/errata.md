@@ -39,6 +39,24 @@ entangler or the bias) rotates past the pole, which makes the stress response
 non monotone: probability rises and then falls as VRAM grows, the opposite of
 risk aversion at the critical end.
 
+## Finding 4: a CRy chain attenuates by about half per hop
+
+Scaling the v2 ring to eight inputs with the readout on the last input
+(`configs/otuken_v3_8in.yaml`) gives a model that only listens to the two or
+three inputs next to the readout. Measured 0 to 1 effect of each input on the
+distilled model, all others held at 0.5: frame load (the readout's own input)
++0.56, camera speed +0.27, draw calls +0.13, pawns +0.06, lights +0.03, VRAM
++0.02, object density +0.006, proximity +0.001. Each controlled rotation only
+passes on a fraction of the previous qubit's excitation, so influence decays
+geometrically along the chain.
+
+Fix (`configs/otuken_v3b_star.yaml`): keep the ring for neighbour correlations
+and add a dedicated readout wire that receives a CRy(0.48) from every input.
+With that every input moves the score by +0.12 to +0.18, all inputs at zero
+give 0.003 and all at one give 0.88. The star angle was chosen by scanning
+0.30 to 0.62 for the most balanced per input effect with a usable output
+range; 0.48 was the best of the scan, not a fit to any benchmark data.
+
 ## The v2 circuit (implemented, verified)
 
 | Change | v1 (paper) | v2 | Why |

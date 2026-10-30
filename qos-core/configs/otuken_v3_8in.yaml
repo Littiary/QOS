@@ -1,0 +1,33 @@
+# v3: eight input oracle matching the Unreal harness telemetry order.
+# Same v2 circuit family (half range encoding, CRy soft ring, Ry population
+# bias on the VRAM qubit), readout on the last qubit so every input feeds
+# the score through the ring.
+name: otuken_v3_8in
+seed: 42
+
+oracle:
+  n_qubits: 8
+  inputs: [proximity, object_density, vram_pressure, light_count, pawn_count, draw_calls, camera_speed, frame_load]
+  entanglement: cry_ring
+  entangle_angle: 1.0471975511965976   # pi/3
+  encoding_scale: 0.5
+  bias:
+    qubit: 2        # VRAM qubit
+    angle: 0.50
+    gate: ry
+  readout_qubit: 7
+  shots: 128
+
+dataset:
+  n_scenarios: 250000
+  labeler: quantum
+
+student:
+  hidden: [64, 64]
+  epochs: 50
+  lr: 0.001
+  batch_size: 512
+  val_split: 0.1
+
+export:
+  opset: 17

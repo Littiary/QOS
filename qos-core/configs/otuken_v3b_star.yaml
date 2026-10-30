@@ -1,0 +1,36 @@
+# v3b: eight input oracle matching the Unreal harness telemetry order.
+# A plain CRy ring with readout on the last input (otuken_v3_8in) attenuates
+# influence by about half per hop, so inputs far from the readout vanish.
+# Here the inputs keep the ring for neighbour correlations and every input
+# also gets a CRy(star_angle) into a dedicated readout wire, which gives all
+# eight a direct, balanced path to the measurement.
+name: otuken_v3b_star
+seed: 42
+
+oracle:
+  n_qubits: 8
+  inputs: [proximity, object_density, vram_pressure, light_count, pawn_count, draw_calls, camera_speed, frame_load]
+  entanglement: cry_ring_star
+  ancilla: true          # dedicated readout wire, no input of its own
+  star_angle: 0.48       # CRy from every input into the readout; balanced per-input effect
+  entangle_angle: 1.0471975511965976   # pi/3
+  encoding_scale: 0.5
+  bias:
+    qubit: 2        # VRAM qubit
+    angle: 0.50
+    gate: ry
+  shots: 128
+
+dataset:
+  n_scenarios: 250000
+  labeler: quantum
+
+student:
+  hidden: [64, 64]
+  epochs: 50
+  lr: 0.001
+  batch_size: 512
+  val_split: 0.1
+
+export:
+  opset: 17

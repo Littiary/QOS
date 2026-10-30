@@ -35,3 +35,17 @@ def logistic_labels(x: np.ndarray) -> np.ndarray:
     proximity, objects, vram = x[:, 0], x[:, 1], x[:, 2]
     z = 2.0 * proximity + 1.5 * objects + 3.5 * vram - 3.5
     return 1.0 / (1.0 + np.exp(-z))
+
+
+def logistic8_labels(x: np.ndarray) -> np.ndarray:
+    """Hand tuned logistic heuristic over the eight canonical inputs.
+
+    Column order: proximity, object_density, vram_pressure, light_count,
+    pawn_count, draw_calls, camera_speed, frame_load. Weights are chosen the
+    way an engineer would set them by hand: VRAM and frame load dominate,
+    lights and geometry next, movement least. The bias centers the output
+    at 0.5 when every input sits at 0.5.
+    """
+    w = np.array([2.0, 1.5, 3.5, 2.0, 1.0, 1.0, 0.5, 3.0])
+    z = x[:, :8] @ w - 0.5 * w.sum()
+    return 1.0 / (1.0 + np.exp(-z))

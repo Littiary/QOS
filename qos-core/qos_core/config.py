@@ -12,8 +12,8 @@ from pathlib import Path
 
 import yaml
 
-VALID_ENTANGLEMENTS = ("ring", "linear", "full", "none", "cry_ring", "cry_linear")
-VALID_LABELERS = ("quantum", "threshold", "logistic")
+VALID_ENTANGLEMENTS = ("ring", "linear", "full", "none", "cry_ring", "cry_linear", "cry_star", "cry_ring_star")
+VALID_LABELERS = ("quantum", "threshold", "logistic", "logistic8")
 VALID_BIAS_GATES = ("rz", "ry", "rx")
 
 # Default CRy entangling angle for the cry_* topologies (pi/3).
@@ -52,6 +52,11 @@ class OracleConfig:
     encoding_scale: float = 1.0
     bias: BiasConfig | None = field(default_factory=BiasConfig)
     readout_qubit: int = 0
+    # Dedicated readout qubit with no input of its own. Every input qubit gets a
+    # CRy(star_angle) into it (cry_star / cry_ring_star), so each input has a
+    # direct path to the measurement instead of decaying along a chain.
+    ancilla: bool = False
+    star_angle: float = 0.39
     # 128 = paper fidelity (sampling noise included). None = exact probabilities
     # from the statevector: much faster, deterministic, no Aer needed.
     shots: int | None = 128
@@ -69,8 +74,12 @@ class OracleConfig:
             raise ValueError(
                 f"{self.n_qubits} qubits require {self.n_qubits} input names, got {len(self.inputs)}"
             )
-        if not 0 <= self.readout_qubit < self.n_qubits:
+        if self.ancilla:
+            self.readout_qubit = self.n_qubits  # the ancilla is the last wire
+        elif not 0 <= self.readout_qubit < self.n_qubits:
             raise ValueError("readout_qubit out of range")
+        if self.entanglement.endswith("star") and not self.ancilla:
+            raise ValueError("star topologies need ancilla: true")
         if self.bias is not None and not 0 <= self.bias.qubit < self.n_qubits:
             raise ValueError("bias.qubit out of range")
 
